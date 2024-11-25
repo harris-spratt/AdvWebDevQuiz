@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-nav w-100 justify-content-between">
+                <!-- Dropdown for Sports -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-lightblue" href="#" id="sportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sports
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="sportsDropdown">
+                        <li><a class="dropdown-item" href="/quiz/soccer">Soccer Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/gaa">GAA Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/mma">MMA Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Dropdown for Geography -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-lightblue" href="#" id="geographyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Geography
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="geographyDropdown">
+                        <li><a class="dropdown-item" href="/quiz/capitals">Capitals Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/flags">Flags Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/random_geography">Random Geography Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Dropdown for History -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-lightblue" href="#" id="historyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        History
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="historyDropdown">
+                        <li><a class="dropdown-item" href="/quiz/scotland">Scotland Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/ireland">Ireland Quiz</a></li>
+                        <li><a class="dropdown-item" href="/quiz/usa">USA Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Static Links -->
+                <a class="nav-link text-lightblue" href="/home">Home</a>
+                <a class="nav-link text-lightblue" href="/leaderboard">Leaderboard</a>
+
+                <!-- Conditional Links -->
+                {% if session.get('user_id') %}
+                    <span class="nav-link text-success">Welcome, {{ session['username'] }}!</span>
+                    <a class="nav-link text-lightblue" href="{{ url_for('signout') }}">Sign Out</a>
+                {% else %}
+                    <a class="nav-link text-lightblue" href="{{ url_for('signin') }}">Sign In</a>
+                    <a class="nav-link text-lightblue" href="{{ url_for('signup') }}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap Bundle with Popper (JS functionality for dropdowns) -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
+
+

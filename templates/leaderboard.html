@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center mb-4">Leaderboard</h1>
+
+    <div class="container">
+        <!-- Bootstrap Table -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Total Questions</th>
+                    <th scope="col">Timestamp</th>  <!-- Column for the timestamp -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in leaderboard_data %}
+                    <tr>
+                        <td>{{ loop.index }}</td>  <!-- Rank (using loop.index to get the current loop number) -->
+                        <td>{{ result[0] }}</td>  <!-- Username -->
+                        <td>{{ result[1] }}</td>  <!-- Category -->
+                        <td>{{ result[2] }}</td>  <!-- Score -->
+                        <td>{{ result[3] }}</td>  <!-- Total Questions -->
+                        <td>{{ result[4] }}</td>  <!-- Raw Timestamp (no formatting needed) -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h3>{{ category.capitalize() }} Quiz Results</h3>
+    <h4>Your Score: {{ score }} / {{ total }}</h4>
+    <a href="/home" class="btn btn-primary mt-3">Return to Home</a>
+</div>
+{% endblock %}

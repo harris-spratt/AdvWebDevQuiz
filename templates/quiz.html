@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="quiz-box">
+    <form method="post">
+        <!-- Display the question -->
+        <h3>{{ question['question']|safe }}</h3>
+
+
+        <!-- Display the options in a 2x2 grid -->
+        <div class="quiz-options">
+            {% for option in question['options'] %}
+                <label class="quiz-option">
+                    <input type="radio" 
+                           name="answer" 
+                           value="{{ option }}" 
+                           {% if session['user_answers'][current_question] == option %} checked {% endif %}>
+                    {{ option }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" name="prev" class="btn btn-secondary" {% if question_num == 1 %} disabled {% endif %}>
+                Previous
+            </button>
+            {% if question_num < total_questions %}
+                <button type="submit" name="next" class="btn btn-primary">Next</button>
+            {% else %}
+                <button type="submit" name="submit" class="btn btn-success">Submit</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
