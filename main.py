@@ -22,6 +22,7 @@ def close_db_connection(exception):
     if db is not None:
         db.close()
 
+#initialise database and run schema
 def init_db():
     with app.app_context():
         db = get_db()
@@ -29,6 +30,7 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+#makes sure to access quizes user must be logged in
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -97,7 +99,7 @@ def home():
     return render_template('Home.html')
 
 @app.route('/quiz/<category>', methods=['GET', 'POST'])
-@login_required
+@login_required #makes sure users are logged in
 def quiz(category):
     if category not in quizzes:
         return "Quiz not found!", 404
@@ -112,13 +114,13 @@ def quiz(category):
         if selected_option:
             session['user_answers'][session['current_question']] = selected_option
 
-        if 'next' in request.form and session['current_question'] < len(quizzes[category]) - 1:
+        if 'next' in request.form and session['current_question'] < len(quizzes[category]) - 1: #code for next button
             session['current_question'] += 1
-        elif 'prev' in request.form and session['current_question'] > 0:
+        elif 'prev' in request.form and session['current_question'] > 0: #code for prev button
             session['current_question'] -= 1
         elif 'submit' in request.form:
             session.modified = True
-            return redirect(url_for('results', category=category))
+            return redirect(url_for('results', category=category)) #redirect to results page when submit is clicked
 
     current_question = session['current_question']
     question_data = quizzes[category][current_question]
@@ -132,7 +134,7 @@ def quiz(category):
         current_question=current_question
     )
 
-
+#calculates score and loads results page
 @app.route('/results/<category>')
 def results(category):
     if category not in quizzes:
