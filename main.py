@@ -5,9 +5,10 @@ import bcrypt
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # Required for session management
+app.secret_key = "n9v@h8!#$d@3dD12_#4fLq98*Klv9@09rA"
 db_location = 'var/sqlite3.db'
 
+#connecting to database
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -28,23 +29,37 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('signin'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-@app.route('/signup', methods=['POST'])
-def register():
-    username = request.form['username']
-    password = request.form['password']
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())  # Hash the password
+# get and post for signup page which allows users to enter a username and password
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        # Form submission logic (e.g., validating and saving user)
+        username = request.form['username']
+        password = request.form['password']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())  # Hash the password and add salt on
 
-    db = get_db()
-    cursor = db.cursor()
-    try:
-        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-        db.commit()
-    except sqlite3.IntegrityError:
-        return "Username already exists!", 400
+        db = get_db()
+        cursor = db.cursor()
+        try:
+            cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))  # Store the hashed version
+            db.commit()
+        except sqlite3.IntegrityError:
+            return "Username already exists!", 400
 
-    return redirect(url_for('signin'))
+        return redirect(url_for('signin'))  # Redirect to sign-in page after successful registration
 
+    return render_template('signup.html')  # Display the signup form if it's a GET request
+
+
+#sign in page checks database with values entered
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
@@ -66,31 +81,20 @@ def signin():
 
     return render_template('signin.html')
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('signin'))
-        return f(*args, **kwargs)
-    return decorated_function
+#sing out which clears session data and returns user to home page
+@app.route('/signout')
+def signout():
+    session.clear()  # Clear all session data
+    return redirect(url_for('home'))  # Redirect to the base page
 
 
 @app.route('/')
 def base():
-    return render_template('base.html', quiz_categories=quizzes.keys())
+    return render_template('home.html', quiz_categories=quizzes.keys())
 
 @app.route('/home')
 def home():
     return render_template('Home.html')
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
-@app.route('/signout')
-def signout():
-    session.clear()  # Clear all session data
-    return redirect(url_for('base'))  # Redirect to the base page
-
-
 
 @app.route('/quiz/<category>', methods=['GET', 'POST'])
 @login_required
@@ -149,7 +153,7 @@ def results(category):
         if user_answer == correct_answer:
             score += 1
 
-    # Now, insert the result only once for the completed quiz
+    #insert the result only once for the completed quiz
     db = get_db()
     cursor = db.cursor()
     cursor.execute("""
@@ -185,11 +189,6 @@ def leaderboard():
     leaderboard_data = cursor.fetchall()
 
     return render_template('leaderboard.html', leaderboard_data=leaderboard_data, title="Leaderboard")
-
-
-
-
-
 
 
 if __name__ == "__main__":
